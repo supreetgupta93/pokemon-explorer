@@ -1,0 +1,127 @@
+@import "tailwindcss";
+
+/* Manual dark-mode toggle (class-based) instead of relying on OS preference */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-display: "Space Grotesk", "Inter", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --color-cream: #f5f2e9;
+  --color-cream-dim: #ece7d9;
+  --color-ink: #1a1a22;
+  --color-ink-soft: #4a4a58;
+  --color-navy: #15151c;
+  --color-navy-soft: #1e1e29;
+  --color-navy-line: #2b2b38;
+  --color-pokedex-red: #e63950;
+  --color-pokedex-red-dim: #c22a40;
+  --color-screen-glow: #33d6c0;
+
+  --shadow-card: 0 1px 2px rgba(26,26,34,0.04), 0 8px 24px -8px rgba(26,26,34,0.12);
+  --shadow-card-hover: 0 4px 8px rgba(26,26,34,0.06), 0 20px 40px -12px rgba(26,26,34,0.22);
+}
+
+@layer base {
+  html {
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    @apply bg-cream text-ink dark:bg-navy dark:text-cream transition-colors duration-300;
+  }
+  ::selection {
+    background: var(--color-pokedex-red);
+    color: white;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display);
+  }
+  .font-mono-num {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Subtle diagonal scanline texture used on the detail-view header and on
+     card hover, echoing a device screen without leaning on skeuomorphism. */
+  .scanline-overlay {
+    background-image: repeating-linear-gradient(
+      115deg,
+      rgba(255, 255, 255, 0.09) 0px,
+      rgba(255, 255, 255, 0.09) 1px,
+      transparent 1px,
+      transparent 5px
+    );
+  }
+
+  .shimmer {
+    position: relative;
+    overflow: hidden;
+    background: var(--color-cream-dim);
+  }
+  .dark .shimmer {
+    background: var(--color-navy-line);
+  }
+  .shimmer::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.35) 50%,
+      transparent 100%
+    );
+    animation: shimmer 1.6s infinite;
+  }
+  .dark .shimmer::after {
+    background-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.08) 50%,
+      transparent 100%
+    );
+  }
+  @keyframes shimmer {
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  .animate-pop-in {
+    animation: pop-in 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes pop-in {
+    from {
+      opacity: 0;
+      transform: scale(0.96) translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.18s ease-out;
+  }
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .shimmer::after,
+    .animate-pop-in,
+    .animate-fade-in,
+    * {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
